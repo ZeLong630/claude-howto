@@ -2,7 +2,7 @@
 
 Tutorial repo. Output is markdown in numbered modules `01-` through `10-`, not an app. Scripts in `scripts/` exist only to validate docs and build the EPUB.
 
-See also `.claude/CLAUDE.md` for stack/commands and `STYLE_GUIDE.md` for lesson structure.
+See `STYLE_GUIDE.md` for lesson structure/naming/diagram conventions. Repo-local `.claude/` holds `commands/` and `skills/` used while authoring.
 
 ## Critical commands
 
@@ -22,7 +22,15 @@ mypy scripts/ --ignore-missing-imports
 bandit -c scripts/pyproject.toml -r scripts/ --exclude scripts/tests/
 ```
 
-Pre-commit runs 5 checks: markdown-lint, cross-references, mermaid-syntax, link-check, build-epub (on `.md` changes). All must pass.
+Pre-commit runs 6 doc checks: markdown-lint, cross-references, mermaid-syntax, link-check, markdown-rendering, build-epub (on `.md` changes) — plus Python checks (ruff, bandit, mypy) on `scripts/`. The `vi/` and `ja/` trees get their own parallel passes. All must pass; CI re-runs them as a second gate.
+
+```bash
+# Translation freshness (English mtime vs translated file)
+python scripts/sync_translations.py
+
+# Static website build (separate from EPUB)
+uv run scripts/build_website.py
+```
 
 ## Architecture map
 
@@ -30,7 +38,7 @@ Pre-commit runs 5 checks: markdown-lint, cross-references, mermaid-syntax, link-
 - Each module: `README.md` + copy-paste templates (`.md`, `.json`, `.sh`).
 - `scripts/` — utilities (EPUB builder, link/mermaid/cross-ref validators). Not the product.
 - `02-memory/*.md` — CLAUDE.md templates users copy into their own projects. Don't confuse with this file.
-- `openspec/` — spec-driven change proposals.
+- `ja/`, `uk/`, `vi/`, `zh/` — full translated mirrors of the `01-`–`10-` modules. English is the source of truth; edit English first, then sync translations.
 
 ## Hard rules
 
